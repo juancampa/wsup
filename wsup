@@ -1,0 +1,30 @@
+#!/bin/bash
+
+workspaces=`i3-msg -t get_workspaces | jq '.[].name' | sed "s/\"//g" | cut -d':' -f2`
+projects='browser slack ayva-web ayva-api ayva-node ayva-code ayva-common ayva-util programs ayva-broker ayva-toolkit ayva-cli avya-hooks'
+
+echo WORKSPACES
+echo "$workspaces"
+
+echo PROJECTS
+echo "$projects"
+
+number=1
+for projectName in $projects ; do
+    number=$(($number+1))
+    friendlyName=`echo $projectName | cut -d- -f2`
+    found=false
+    for workspace in $workspaces ; do
+        if [ $friendlyName == $workspace ] ; then
+            found=true
+        fi
+    done
+
+    if [ $found == true ] ; then
+        echo Exists $projectName
+        continue;
+    fi
+    echo Creating $projectName
+
+    ~/bin/ws $number $projectName
+done
